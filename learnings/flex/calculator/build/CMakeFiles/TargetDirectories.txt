@@ -1,3 +1,0 @@
-/mnt/d/IITD/Sem1/COL701-Software Systems Lab/markdown2html/learnings/flex/calculator/build/CMakeFiles/rebuild_cache.dir
-/mnt/d/IITD/Sem1/COL701-Software Systems Lab/markdown2html/learnings/flex/calculator/build/CMakeFiles/calculator.dir
-/mnt/d/IITD/Sem1/COL701-Software Systems Lab/markdown2html/learnings/flex/calculator/build/CMakeFiles/edit_cache.dir
