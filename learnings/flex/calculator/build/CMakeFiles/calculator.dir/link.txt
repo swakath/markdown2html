@@ -1,0 +1,1 @@
+/usr/bin/cc    CMakeFiles/calculator.dir/parser.c.o CMakeFiles/calculator.dir/lexer.c.o  -o calculator 

@@ -9,10 +9,10 @@
 "*" { return MUL; }
 "/" { return DIV; }
 "|" { return ABS; }
-[0-9]+ {yylval = atoi(yytext); return NUMBER; }
+[0-9]+ {yylval.num = atoi(yytext); return NUMBER; }
 \n { return EOL; }
 [ \t] { /* ignore whitespace */ }
-. {printf("Mystery character %c\n", *yytext);}
+. {return yytext[0];}
 %%
 
 int yywrap(){

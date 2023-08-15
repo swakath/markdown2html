@@ -14,22 +14,31 @@
     }
 %}
 
+%union{
+    int num;
+}
 
 
-%token NUMBER
+%token <num> NUMBER
 %token ADD SUB MUL DIV ABS
 %token EOL
 
+
 %start calclist
+%type <num> exp
+%type <num> factor
+%type <num> term
 
 %%
 
 calclist:
     | calclist exp EOL { printf("= %d\n", $2);}
+    | calclist error EOL {}
 ;
 
-term: NUMBER
-    | ABS term { $$ = ($2>=0) ? $2 : -1*$2; }
+exp : factor {$$ = $1; }
+    | exp ADD factor { $$ = $1 + $3; }
+    | exp SUB factor { $$ = $1 - $3; }
 ;
 
 factor: term
@@ -37,10 +46,10 @@ factor: term
     | factor DIV term { $$ = $1 / $3; }
 ;
 
-exp : factor {$$ = $1; }
-    | exp ADD factor { $$ = $1 + $3; }
-    | exp SUB factor { $$ = $1 - $3; }
+term: NUMBER
+    | ABS term { $$ = ($2>=0) ? $2 : -1*$2; }
 ;
+
 
 %%
 
