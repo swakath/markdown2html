@@ -27,18 +27,29 @@
 %start convertList
 
 %type <strval> blocks
+%type <strval> block
 %type <strval> paragraph
 %type <strval> content
 %type <strval> lines
 %type <strval> paragraphs
-
+%type <strval> headings
 
 %%
 
 convertList: blocks  {std::cout << *$1 << std::endl;}
    
 ;
-blocks : paragraphs
+
+blocks : block
+    | blocks block {
+                    $$ = new std::string(*$1 + *$2);
+                    delete $1;
+                    delete $2;
+        }
+
+block : paragraphs
+    | headings
+
 ;
 paragraphs: paragraph { if( $1->length() > 6){
                         if( $1->substr(0,3) == "<p>" && 
@@ -63,6 +74,10 @@ paragraphs: paragraph { if( $1->length() > 6){
         }
 ;
 
+
+
+
+
 paragraph: content
     | paragraph content             {   $$ = new std::string(*$1 + *$2);
                                         delete $1;
@@ -75,7 +90,34 @@ paragraph: content
                                         delete $1;
                                     }
 ;
-    
+
+headings: 
+        H1 content { 
+                    $$ = new std::string("<h1>" + *$2 + "<\\h1>");
+                    delete $2;
+                }
+
+        | H2 content {
+                    $$ = new std::string("<h2>" + *$2 + "<\\h2>");
+                    delete $2;
+                }
+        | H3 content {
+                    $$ = new std::string("<h3>" + *$2 + "<\\h3>");
+                    delete $2;
+                } 
+        | H4 content {
+                    $$ = new std::string("<h4>" + *$2 + "<\\h4>");
+                    delete $2;
+                } 
+        | H5 content {
+                    $$ = new std::string("<h5>" + *$2 + "<\\h5>");
+                    delete $2;
+                }
+        | H6 content {
+                    $$ = new std::string("<h6>" + *$2 + "<\\h6>");
+                    delete $2;
+                }
+;  
 content: lines
     | AITALIC lines AITALIC             {   $$ = new std::string("<em>" + *$2 + "<\\em>");
                                             delete $2;      
