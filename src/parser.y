@@ -35,8 +35,7 @@
 
 %%
 
-convertList: blocks
-    |   convertList blocks  {std::cout << *$2 << std::endl;}
+convertList: blocks  {std::cout << *$1 << std::endl;}
    
 ;
 blocks: paragraph { if( $1->length() > 6){
@@ -54,6 +53,12 @@ blocks: paragraph { if( $1->length() > 6){
                         delete $1;
                     }
                 }
+
+        | blocks paragraph {
+                    $$ = new std::string(*$1 + *$2);
+                    delete $1;
+                    delete $2;
+        }
 
 
 paragraph: content

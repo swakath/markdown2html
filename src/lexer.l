@@ -5,7 +5,7 @@
     #include "parser.hpp"
 
     extern "C" int yylex();
-    #define TOKEN(p) printf("", p)
+    #define TOKEN(p) printf("%s\n", p)
 %}
 
 ALPA                [a-zA-Z]
@@ -43,15 +43,14 @@ TAB                 "\t"
 ^{HASH}{HASH}{HASH}{HASH}{HASH}{HASH}{SPACE}         { TOKEN ("H6"); return H6; }
 
 
-{SPACE}{2,}{NEWLINE}                                { TOKEN ("LINEBREAK"); return LINEBREAK;}
+{SPACE}{2,}{NEWLINE}                                  { TOKEN ("LINEBREAK"); return LINEBREAK;}
 
 
-{NEWLINE}{2,}                                       { TOKEN ("PARA"); return PARA;}
-
+{NEWLINE}{NEWLINE}                                       { TOKEN ("PARA"); return PARA;}                                          
 {NEWLINE}{LETTER}                                   {   TOKEN ("EOL"); 
                                                         yytext[0]=' ';  
                                                         yylval.strval = new std::string(yytext);
-                                                        return EOL;}
+                                                        return TEXT;}
 
 {SPACE}{1,}                                         {   TOKEN ("SPACE");
                                                         yytext[1] = '\0';
@@ -66,7 +65,6 @@ TAB                 "\t"
 
 {TEXT}                                              { TOKEN ("TEXT"); yylval.strval = new std::string(yytext); return TEXT;}
 
-<<EOF>>                                             { return END_OF_FILE;}
 .                                                   { TOKEN ("OTHER");}
 
 %%
