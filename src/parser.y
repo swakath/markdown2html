@@ -35,26 +35,63 @@
 
 %%
 
-convertList:
-    |   convertList blocks {std::cout << *$2 << std::endl;}
-    
+convertList: blocks
+    |   convertList blocks  {std::cout << *$2 << std::endl;}
+   
 ;
-blocks: paragraph
+blocks: paragraph { if( $1->length() > 6){
+                        if( $1->substr(0,3) == "<p>" && 
+                            $1->substr($1->length()-4,4) == "<\\p>"){
+                            $$ = $1;
+                        }
+                        else{
+                            $$ = new std::string("<p>" + *$1 + "<\\p>");
+                            delete $1;
+                        }
+                    }    
+                    else{ 
+                        $$ = new std::string("<p>" + *$1 + "<\\p>");
+                        delete $1;
+                    }
+                }
 
 
 paragraph: content
-    | paragraph content             { $$ = new std::string(*$1 + *$2);}
-    | PARA paragraph                { $$ = new std::string("<p>" + *$2 + "<\\p>"); }
-    | paragraph LINEBREAK           { $$ = new std::string(*$1 + "<br>"); }
+    | paragraph content             {   $$ = new std::string(*$1 + *$2);
+                                        delete $1;
+                                        delete $2;
+                                    }
+    | PARA paragraph                { $$ = new std::string("<p>" + *$2 + "<\\p>"); 
+                                        delete $2;
+                                    }
+    | paragraph LINEBREAK           { $$ = new std::string(*$1 + "<br>"); 
+                                        delete $1;
+                                    }
 ;
     
 content: lines
-    | AITALIC lines AITALIC               {$$ = new std::string("<em>" + *$2 + "<\\em>");}
-    | UITALIC lines UITALIC               {$$ = new std::string("<em>" + *$2 + "<\\em>");}
-    | ABOLD   lines  ABOLD                {$$ = new std::string("<strong>" + *$2 + "<\\strong>");}
-    | UBOLD   lines  UBOLD                {$$ = new std::string("<strong>" + *$2 + "<\\strong>");}
-    | ABOLD AITALIC lines ABOLD AITALIC   {$$ = new std::string("<strong><em>" + *$3 + "<\\em><\\strong>");}
-    | UBOLD UITALIC lines UBOLD UITALIC   {$$ = new std::string("<strong><em>" + *$3 + "<\\em><\\strong>");}
+    | AITALIC lines AITALIC             {   $$ = new std::string("<em>" + *$2 + "<\\em>");
+                                            delete $2;      
+                                        }
+
+    | UITALIC lines UITALIC             {   $$ = new std::string("<em>" + *$2 + "<\\em>");
+                                            delete $2;
+                                        }
+
+    | ABOLD   lines  ABOLD              {   $$ = new std::string("<strong>" + *$2 + "<\\strong>");
+                                            delete $2;
+                                        }
+
+    | UBOLD   lines  UBOLD              {   $$ = new std::string("<strong>" + *$2 + "<\\strong>");
+                                            delete $2;
+                                        }
+
+    | ABOLD AITALIC lines ABOLD AITALIC   { $$ = new std::string("<strong><em>" + *$3 + "<\\em><\\strong>");
+                                            delete $3;
+                                        }
+    | UBOLD UITALIC lines UBOLD UITALIC   { $$ = new std::string("<strong><em>" + *$3 + "<\\em><\\strong>");
+                                            delete $3;
+                                        }
 ;
 
 lines: TEXT

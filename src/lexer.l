@@ -5,13 +5,13 @@
     #include "parser.hpp"
 
     extern "C" int yylex();
-    #define TOKEN(p) printf("%s\n", p)
+    #define TOKEN(p) printf("", p)
 %}
 
 ALPA                [a-zA-Z]
 NUM                 [0-9]
 PUNC                [@$%^&\{\};"'<>,?/~`=\\]
-SPECIAL             [\#\*\_\!\[\]\(\)\|\:\+\-\.]
+SPECIAL             [\#\!\[\]\(\)\|\:\+\-\.]
 SPACE               " "
 LETTER              ({ALPA}|{NUM}|{PUNC}|{SPECIAL})
 TEXT                ({LETTER})+
@@ -63,7 +63,9 @@ TAB                 "\t"
 {USCORE}                                            { TOKEN ("UITALIC"); return UITALIC;}
 {ASTRX}{ASTRX}                                      { TOKEN ("ABOLD"); return ABOLD;}
 {USCORE}{USCORE}                                    { TOKEN ("UBOLD"); return UBOLD;}
+
 {TEXT}                                              { TOKEN ("TEXT"); yylval.strval = new std::string(yytext); return TEXT;}
+
 <<EOF>>                                             { return END_OF_FILE;}
 .                                                   { TOKEN ("OTHER");}
 
