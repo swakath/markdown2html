@@ -11,8 +11,9 @@
 ALPA                [a-zA-Z]
 NUM                 [0-9]
 PUNC                [@$%^&\{\};"'<>,?/~`=\\]
+SPECIAL             [\#\*\_\!\[\]\(\)\|\:\+\-\.]
 SPACE               " "
-LETTER              ({ALPA}|{NUM}|{PUNC})
+LETTER              ({ALPA}|{NUM}|{PUNC}|{SPECIAL})
 TEXT                ({LETTER})+
 
 HASH                "#"
@@ -24,7 +25,7 @@ RSQRB               "]"
 LPAR                "("
 RPAR                ")"
 PIPE                "|"
-COLON               ":""
+COLON               ":"
 PLUS                "+"
 MINUS               "-"
 DOT                 "."
@@ -34,15 +35,13 @@ NEWLINE             "\n"
 TAB                 "\t"
 
 %%
-{HASH}{SPACE}                                       { TOKEN ("H1"); return H1;}
-{HASH}{HASH}{SPACE}                                 { TOKEN ("H2"); return H2; }
-{HASH}{HASH}{HASH}{SPACE}                           { TOKEN ("H3"); return H3; }
-{HASH}{HASH}{HASH}{HASH}{SPACE}                     { TOKEN ("H4"); return H4; }
-{HASH}{HASH}{HASH}{HASH}{HASH}{SPACE}               { TOKEN ("H5"); return H5; }
-{HASH}{HASH}{HASH}{HASH}{HASH}{HASH}{SPACE}         { TOKEN ("H6"); return H6; }
-{HASH}+                                             {   TOKEN ("HTEXT"); 
-                                                        yylval.strval = new std::string(yytext); 
-                                                        return TEXT; }
+^{HASH}{SPACE}                                       { TOKEN ("H1"); return H1;}
+^{HASH}{HASH}{SPACE}                                 { TOKEN ("H2"); return H2; }
+^{HASH}{HASH}{HASH}{SPACE}                           { TOKEN ("H3"); return H3; }
+^{HASH}{HASH}{HASH}{HASH}{SPACE}                     { TOKEN ("H4"); return H4; }
+^{HASH}{HASH}{HASH}{HASH}{HASH}{SPACE}               { TOKEN ("H5"); return H5; }
+^{HASH}{HASH}{HASH}{HASH}{HASH}{HASH}{SPACE}         { TOKEN ("H6"); return H6; }
+
 
 {SPACE}{2,}{NEWLINE}                                { TOKEN ("LINEBREAK"); return LINEBREAK;}
 

@@ -40,7 +40,6 @@ convertList:
     
 ;
 blocks: paragraph
-    | headings
 
 
 paragraph: content
@@ -49,9 +48,6 @@ paragraph: content
     | paragraph LINEBREAK           { $$ = new std::string(*$1 + "<br>"); }
 ;
     
-headings: 
-    | H1 lines
-
 content: lines
     | AITALIC lines AITALIC               {$$ = new std::string("<em>" + *$2 + "<\\em>");}
     | UITALIC lines UITALIC               {$$ = new std::string("<em>" + *$2 + "<\\em>");}
