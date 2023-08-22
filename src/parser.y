@@ -30,7 +30,7 @@
 %type <strval> paragraph
 %type <strval> content
 %type <strval> lines
-
+%type <strval> paragraphs
 
 
 %%
@@ -38,7 +38,9 @@
 convertList: blocks  {std::cout << *$1 << std::endl;}
    
 ;
-blocks: paragraph { if( $1->length() > 6){
+blocks : paragraphs
+;
+paragraphs: paragraph { if( $1->length() > 6){
                         if( $1->substr(0,3) == "<p>" && 
                             $1->substr($1->length()-4,4) == "<\\p>"){
                             $$ = $1;
@@ -54,12 +56,12 @@ blocks: paragraph { if( $1->length() > 6){
                     }
                 }
 
-        | blocks paragraph {
+        | paragraphs paragraph {
                     $$ = new std::string(*$1 + *$2);
                     delete $1;
                     delete $2;
         }
-
+;
 
 paragraph: content
     | paragraph content             {   $$ = new std::string(*$1 + *$2);
