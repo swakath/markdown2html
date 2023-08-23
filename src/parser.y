@@ -119,26 +119,26 @@ headings:
                 }
 ;  
 content: lines
-    | AITALIC lines AITALIC             {   $$ = new std::string("<em>" + *$2 + "<\\em>");
+    | AITALIC content AITALIC             {   $$ = new std::string("<em>" + *$2 + "<\\em>");
                                             delete $2;      
                                         }
 
-    | UITALIC lines UITALIC             {   $$ = new std::string("<em>" + *$2 + "<\\em>");
+    | UITALIC content UITALIC             {   $$ = new std::string("<em>" + *$2 + "<\\em>");
                                             delete $2;
                                         }
 
-    | ABOLD   lines  ABOLD              {   $$ = new std::string("<strong>" + *$2 + "<\\strong>");
+    | ABOLD   content  ABOLD              {   $$ = new std::string("<strong>" + *$2 + "<\\strong>");
                                             delete $2;
                                         }
 
-    | UBOLD   lines  UBOLD              {   $$ = new std::string("<strong>" + *$2 + "<\\strong>");
+    | UBOLD   content  UBOLD              {   $$ = new std::string("<strong>" + *$2 + "<\\strong>");
                                             delete $2;
                                         }
 
-    | ABOLD AITALIC lines ABOLD AITALIC   { $$ = new std::string("<strong><em>" + *$3 + "<\\em><\\strong>");
+    | ABOLD AITALIC content ABOLD AITALIC   { $$ = new std::string("<strong><em>" + *$3 + "<\\em><\\strong>");
                                             delete $3;
                                         }
-    | UBOLD UITALIC lines UBOLD UITALIC   { $$ = new std::string("<strong><em>" + *$3 + "<\\em><\\strong>");
+    | UBOLD UITALIC content UBOLD UITALIC   { $$ = new std::string("<strong><em>" + *$3 + "<\\em><\\strong>");
                                             delete $3;
                                         }
 ;
