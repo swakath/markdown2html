@@ -20,15 +20,15 @@
 %token H1 H2 H3 H4 H5 H6 
 %token ABOLD UBOLD 
 %token AITALIC UITALIC 
+%token ORDERED
 %token PARA LINEBREAK  NEWLINE
 %token <strval> TEXT
-%token END_OF_FILE EOL
 
-%right H1 H2 H3 H4 H5 H6 PARA
-%left LINEBREAK
+%left H1 H2 H3 H4 H5 H6 PARA LINEBREAK
 
 %start convertList
 
+%type <strval> convertList
 %type <strval> blocks
 %type <strval> block
 %type <strval> paragraph
@@ -40,38 +40,44 @@
 %type <strval> paragraphs
 %type <strval> headings
 
+
 %%
 
-convertList: blocks  {std::cout << *$1 << std::endl;}
+convertList: NEWLINE convertList {$$ = $2;}
+        | PARA convertList {$$ = $2;}
+        | blocks {std::cout << *$1 << std::endl;}
    
 ;
 
 blocks : block
-    | blocks block {
-                    $$ = new std::string(*$1 + *$2);
-                    delete $1;
-                    delete $2;
-        }
+       | blocks block {
+		    $$ = new std::string(*$1 + *$2);
+		    delete $1;
+		    delete $2;
+	}
+;
 
 block : paragraphs
-    | headings
+      | headings
 
 ;
-paragraphs: paragraph { if( $1->length() > 6){
-                        if( $1->substr(0,3) == "<p>" && 
-                            $1->substr($1->length()-4,4) == "<\\p>"){
-                            $$ = $1;
-                        }
-                        else{
-                            $$ = new std::string("<p>" + *$1 + "<\\p>");
-                            delete $1;
-                        }
-                    }    
-                    else{ 
-                        $$ = new std::string("<p>" + *$1 + "<\\p>");
-                        delete $1;
-                    }
-                }
+
+paragraphs: paragraph { 
+	  if( $1->length() > 6){
+	  if( $1->substr(0,3) == "<p>" && 
+			    $1->substr($1->length()-4,4) == "<\\p>"){
+			    $$ = $1;
+			}
+			else{
+			    $$ = new std::string("<p>" + *$1 + "<\\p>");
+			    delete $1;
+			}
+		    }    
+		    else{ 
+			$$ = new std::string("<p>" + *$1 + "<\\p>");
+			delete $1;
+		    }
+		}
 
         | paragraphs paragraph { 
 	                    std::string* temp;
@@ -162,8 +168,7 @@ headings:
         | H6 contents LINEBREAK{
                     $$ = new std::string("<h6>" + *$2 + "<\\h6>");
                     delete $2;
-                }
-        
+                } 
 ;
 
 
@@ -173,6 +178,8 @@ contents : content
                     delete $1;
                     delete $2;
         }
+        | contents NEWLINE content {$$ = new std::string(*$1 + " "+ *$3); delete $1; delete $3;}
+;
 
 content: lines
     | AITALIC content AITALIC             {   $$ = new std::string("<em>" + *$2 + "<\\em>");
@@ -200,11 +207,14 @@ content: lines
 ;
 
 lines: line
-    | lines line {$$ = new std::string(*$1 + *$2);}
+    | lines line            {$$ = new std::string(*$1 + *$2); delete $1; delete $2;}
+;
+
 
 line: TEXT
-    | line TEXT {$$ = new std::string(*$1 + *$2);}
+    | line TEXT {$$ = new std::string(*$1 + *$2); delete $1; delete $2;}
 ;
+
 %%
 
 void yyerror(const char *s){

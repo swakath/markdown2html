@@ -45,13 +45,9 @@ TAB                 "\t"
 
 {SPACE}{2,}{NEWLINE}                                  { TOKEN ("LINEBREAK"); return LINEBREAK;}
 
-
-{NEWLINE}{NEWLINE}                                       { TOKEN ("PARA"); return PARA;}                                          
-{NEWLINE}{LETTER}                                   {   TOKEN ("EOL"); 
-                                                        yytext[0]=' ';  
-                                                        yylval.strval = new std::string(yytext);
-                                                        return TEXT;}
-
+{NEWLINE}{2,}                                       { TOKEN ("PARA"); return PARA;}                                          
+{NEWLINE}                                         {   TOKEN ("NEWLINE"); 
+                                                        return NEWLINE;}
 {SPACE}{1,}                                         {   TOKEN ("SPACE");
                                                         yytext[1] = '\0';
                                                         yylval.strval = new std::string(yytext);
@@ -62,6 +58,8 @@ TAB                 "\t"
 {USCORE}                                            { TOKEN ("UITALIC"); return UITALIC;}
 {ASTRX}{ASTRX}                                      { TOKEN ("ABOLD"); return ABOLD;}
 {USCORE}{USCORE}                                    { TOKEN ("UBOLD"); return UBOLD;}
+
+
 
 {TEXT}                                              { TOKEN ("TEXT"); yylval.strval = new std::string(yytext); return TEXT;}
 
