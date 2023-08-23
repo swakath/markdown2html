@@ -24,13 +24,19 @@
 %token <strval> TEXT
 %token END_OF_FILE EOL
 
+%right H1 H2 H3 H4 H5 H6 PARA
+%left LINEBREAK
+
 %start convertList
 
 %type <strval> blocks
 %type <strval> block
 %type <strval> paragraph
+%type <strval> contents
 %type <strval> content
 %type <strval> lines
+%type <strval> line
+
 %type <strval> paragraphs
 %type <strval> headings
 
@@ -67,57 +73,107 @@ paragraphs: paragraph { if( $1->length() > 6){
                     }
                 }
 
-        | paragraphs paragraph {
-                    $$ = new std::string(*$1 + *$2);
-                    delete $1;
-                    delete $2;
-        }
+        | paragraphs paragraph { 
+	                    std::string* temp;
+
+                        if( $2->length() > 6){
+                            if( $2->substr(0,3) == "<p>" && 
+                                $2->substr($2->length()-4,4) == "<\\p>"){
+                                temp = $2;
+                            }
+                            
+                            else{
+                                temp = new std::string("<p>" + *$2 + "<\\p>");
+                                delete $2;
+                            }
+                        }    
+                        else{ 
+                            temp = new std::string("<p>" + *$2 + "<\\p>");
+                            delete $2;
+                        }
+	
+                        $$ = new std::string(*$1 + *temp);
+                        delete $1;
+                        delete temp;
+                }
 ;
 
 
 
 
 
-paragraph: content
-    | paragraph content             {   $$ = new std::string(*$1 + *$2);
+paragraph: contents
+    | paragraph PARA              { $$ = new std::string("<p>" + *$1 + "<\\p>"); 
                                         delete $1;
-                                        delete $2;
-                                    }
-    | PARA paragraph                { $$ = new std::string("<p>" + *$2 + "<\\p>"); 
-                                        delete $2;
-                                    }
-    | paragraph LINEBREAK           { $$ = new std::string(*$1 + "<br>"); 
+                                       }
+
+    | paragraph LINEBREAK paragraph { $$ = new std::string(*$1 + "<br>" + *$3); 
                                         delete $1;
                                     }
 ;
 
 headings: 
-        H1 content { 
+        H1 contents PARA { 
                     $$ = new std::string("<h1>" + *$2 + "<\\h1>");
                     delete $2;
                 }
 
-        | H2 content {
+        | H2 contents PARA {
                     $$ = new std::string("<h2>" + *$2 + "<\\h2>");
                     delete $2;
                 }
-        | H3 content {
+        | H3 contents PARA {
                     $$ = new std::string("<h3>" + *$2 + "<\\h3>");
                     delete $2;
                 } 
-        | H4 content {
+        | H4 contents PARA{
                     $$ = new std::string("<h4>" + *$2 + "<\\h4>");
                     delete $2;
                 } 
-        | H5 content {
+        | H5 contents PARA{
                     $$ = new std::string("<h5>" + *$2 + "<\\h5>");
                     delete $2;
                 }
-        | H6 content {
+        | H6 contents PARA{
                     $$ = new std::string("<h6>" + *$2 + "<\\h6>");
                     delete $2;
                 }
-;  
+        | H1 contents LINEBREAK { 
+                    $$ = new std::string("<h1>" + *$2 + "<\\h1>");
+                    delete $2;
+                }
+
+        | H2 contents LINEBREAK {
+                    $$ = new std::string("<h2>" + *$2 + "<\\h2>");
+                    delete $2;
+                }
+        | H3 contents LINEBREAK {
+                    $$ = new std::string("<h3>" + *$2 + "<\\h3>");
+                    delete $2;
+                } 
+        | H4 contents LINEBREAK {
+                    $$ = new std::string("<h4>" + *$2 + "<\\h4>");
+                    delete $2;
+                } 
+        | H5 contents LINEBREAK{
+                    $$ = new std::string("<h5>" + *$2 + "<\\h5>");
+                    delete $2;
+                }
+        | H6 contents LINEBREAK{
+                    $$ = new std::string("<h6>" + *$2 + "<\\h6>");
+                    delete $2;
+                }
+        
+;
+
+
+contents : content
+        | contents content {
+                    $$ = new std::string(*$1 + *$2);
+                    delete $1;
+                    delete $2;
+        }
+
 content: lines
     | AITALIC content AITALIC             {   $$ = new std::string("<em>" + *$2 + "<\\em>");
                                             delete $2;      
@@ -143,8 +199,11 @@ content: lines
                                         }
 ;
 
-lines: TEXT
-    | TEXT lines {$$ = new std::string(*$1 + *$2);}
+lines: line
+    | lines line {$$ = new std::string(*$1 + *$2);}
+
+line: TEXT
+    | line TEXT {$$ = new std::string(*$1 + *$2);}
 ;
 %%
 

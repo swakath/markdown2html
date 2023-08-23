@@ -6,6 +6,7 @@
 
     extern "C" int yylex();
     #define TOKEN(p) printf("%s\n", p)
+    
 %}
 
 ALPA                [a-zA-Z]
@@ -41,7 +42,6 @@ TAB                 "\t"
 ^{HASH}{HASH}{HASH}{HASH}{SPACE}                     { TOKEN ("H4"); return H4; }
 ^{HASH}{HASH}{HASH}{HASH}{HASH}{SPACE}               { TOKEN ("H5"); return H5; }
 ^{HASH}{HASH}{HASH}{HASH}{HASH}{HASH}{SPACE}         { TOKEN ("H6"); return H6; }
-
 
 {SPACE}{2,}{NEWLINE}                                  { TOKEN ("LINEBREAK"); return LINEBREAK;}
 
