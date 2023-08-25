@@ -41,6 +41,8 @@
 %type <strval> paragraphs
 %type <strval> headings
 
+%type <strval> orderedLists
+%type <strval> orderedList
 
 %%
 
@@ -61,8 +63,18 @@ blocks : block
 
 block : paragraphs
       | headings
-
+      | orderedLists                    { $$ = new std::string("<ol>" + *$1 + "</ol>"); delete $1;} 
 ;
+
+orderedLists : orderedList
+            | orderedLists orderedList  {$$ = new std::string(*$1 + *$2); delete $1; delete $2;}
+
+orderedList: ORDERED content NEWLINE    { $$ = new std::string("<li>" + *$2 + "</li>");
+                                        delete $2;
+                                        }
+            | ORDERED content PARA       { $$ = new std::string("<li>" + *$2 + "</li>");
+                                        delete $2;
+                                        }
 
 paragraphs: paragraph { 
 	  if( $1->length() > 6){
@@ -118,6 +130,7 @@ paragraph: contents
     | paragraph LINEBREAK paragraph { $$ = new std::string(*$1 + "<br>" + *$3); 
                                         delete $1;
                                     }
+    | paragraph NEWLINE             {}
 ;
 
 headings: 
@@ -146,28 +159,28 @@ headings:
                     $$ = new std::string("<h6>" + *$2 + "</h6>");
                     delete $2;
                 }
-        | H1 contents LINEBREAK { 
+        | H1 contents NEWLINE { 
                     $$ = new std::string("<h1>" + *$2 + "</h1>");
                     delete $2;
                 }
 
-        | H2 contents LINEBREAK {
+        | H2 contents NEWLINE {
                     $$ = new std::string("<h2>" + *$2 + "</h2>");
                     delete $2;
                 }
-        | H3 contents LINEBREAK {
+        | H3 contents NEWLINE {
                     $$ = new std::string("<h3>" + *$2 + "</h3>");
                     delete $2;
                 } 
-        | H4 contents LINEBREAK {
+        | H4 contents NEWLINE {
                     $$ = new std::string("<h4>" + *$2 + "</h4>");
                     delete $2;
                 } 
-        | H5 contents LINEBREAK{
+        | H5 contents NEWLINE{
                     $$ = new std::string("<h5>" + *$2 + "</h5>");
                     delete $2;
                 }
-        | H6 contents LINEBREAK{
+        | H6 contents NEWLINE{
                     $$ = new std::string("<h6>" + *$2 + "</h6>");
                     delete $2;
                 } 
@@ -180,7 +193,6 @@ contents : content
                     delete $1;
                     delete $2;
         }
-        | contents NEWLINE content {$$ = new std::string(*$1 + " "+ *$3); delete $1; delete $3;}
 ;
 
 content: lines

@@ -1,5 +1,6 @@
 %{
-    #include <stdio.h> 
+    #include <stdio.h>
+    #include <string> 
     #include "parser.hpp"
 
     extern int yylex();
@@ -12,7 +13,7 @@ NUM                 [0-9]
 PUNC                [@$%^&\{\};"'<>,?/~`=\\]
 SPECIAL             [\#\!\[\]\(\)\|\:\+\-\.]
 SPACE               " "
-LETTER              ({ALPA}|{NUM}|{PUNC}|{SPECIAL})
+LETTER              ({ALPA})+({ALPA}|{NUM}|{PUNC}|{SPECIAL})*
 TEXT                ({LETTER})+
 
 HASH                "#"
@@ -45,20 +46,26 @@ TAB                 "\t"
 
 {NEWLINE}{3,}                                       { TOKEN ("PARA"); return ENDLIST;}
 {NEWLINE}{NEWLINE}                                  { TOKEN ("PARA"); return PARA;}                                          
+{NEWLINE}{LETTER}                                   { 
+                                                        TOKEN ("SBREAK");
+                                                        yylval.strval = new std::string(yytext); 
+                                                        yylval.strval->at(0) = ' ';
+                                                        return TEXT;
+                                                    }
 {NEWLINE}                                           { TOKEN ("NEWLINE"); return NEWLINE;}
+                   
 
 {SPACE}{1,}                                         {   TOKEN ("SPACE");
                                                         yytext[1] = '\0';
                                                         yylval.strval = new std::string(yytext);
                                                         return TEXT;
                                                     }
-
+^{NUM}{DOT}{SPACE}                                  { TOKEN ("ORDERED"); return ORDERED;}
 {ASTRX}                                             { TOKEN ("AITALIC"); return AITALIC;}
 {USCORE}                                            { TOKEN ("UITALIC"); return UITALIC;}
 {ASTRX}{ASTRX}                                      { TOKEN ("ABOLD"); return ABOLD;}
 {USCORE}{USCORE}                                    { TOKEN ("UBOLD"); return UBOLD;}
 
-^{NUM}{DOT}{SPACE}                                  { TOKEN ("ORDERED"); return ORDERED;}
 
 {TEXT}                                              { TOKEN ("TEXT"); yylval.strval = new std::string(yytext); return TEXT;}
 

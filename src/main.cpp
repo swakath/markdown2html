@@ -52,6 +52,7 @@ int main(int argc, char* argv[]){
 
     outputHTML = getHtmlOut();
     fprintf(fptrout,"%s\n", outputHTML->c_str());
+    printf("%s\n", outputHTML->c_str());
     fprintf(fptrout,"</body>\n");
     fprintf(fptrout,"</html>");
 
