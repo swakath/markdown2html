@@ -1,10 +1,8 @@
 %{
-    #include <stdio.h>
-    #include <stdlib.h>    
-    #include <string>
+    #include <stdio.h> 
     #include "parser.hpp"
 
-    extern "C" int yylex();
+    extern int yylex();
     #define TOKEN(p) printf("%s\n", p)
     
 %}
@@ -36,18 +34,19 @@ NEWLINE             "\n"
 TAB                 "\t"
 
 %%
-^{HASH}{SPACE}                                       { TOKEN ("H1"); return H1;}
-^{HASH}{HASH}{SPACE}                                 { TOKEN ("H2"); return H2; }
-^{HASH}{HASH}{HASH}{SPACE}                           { TOKEN ("H3"); return H3; }
-^{HASH}{HASH}{HASH}{HASH}{SPACE}                     { TOKEN ("H4"); return H4; }
-^{HASH}{HASH}{HASH}{HASH}{HASH}{SPACE}               { TOKEN ("H5"); return H5; }
-^{HASH}{HASH}{HASH}{HASH}{HASH}{HASH}{SPACE}         { TOKEN ("H6"); return H6; }
+^{HASH}{SPACE}                                      { TOKEN ("H1"); return H1;}
+^{HASH}{HASH}{SPACE}                                { TOKEN ("H2"); return H2; }
+^{HASH}{HASH}{HASH}{SPACE}                          { TOKEN ("H3"); return H3; }
+^{HASH}{HASH}{HASH}{HASH}{SPACE}                    { TOKEN ("H4"); return H4; }
+^{HASH}{HASH}{HASH}{HASH}{HASH}{SPACE}              { TOKEN ("H5"); return H5; }
+^{HASH}{HASH}{HASH}{HASH}{HASH}{HASH}{SPACE}        { TOKEN ("H6"); return H6; }
 
-{SPACE}{2,}{NEWLINE}                                  { TOKEN ("LINEBREAK"); return LINEBREAK;}
+{SPACE}{2,}{NEWLINE}                                { TOKEN ("LINEBREAK"); return LINEBREAK;}
 
-{NEWLINE}{2,}                                       { TOKEN ("PARA"); return PARA;}                                          
-{NEWLINE}                                         {   TOKEN ("NEWLINE"); 
-                                                        return NEWLINE;}
+{NEWLINE}{3,}                                       { TOKEN ("PARA"); return ENDLIST;}
+{NEWLINE}{NEWLINE}                                  { TOKEN ("PARA"); return PARA;}                                          
+{NEWLINE}                                           { TOKEN ("NEWLINE"); return NEWLINE;}
+
 {SPACE}{1,}                                         {   TOKEN ("SPACE");
                                                         yytext[1] = '\0';
                                                         yylval.strval = new std::string(yytext);
@@ -59,7 +58,7 @@ TAB                 "\t"
 {ASTRX}{ASTRX}                                      { TOKEN ("ABOLD"); return ABOLD;}
 {USCORE}{USCORE}                                    { TOKEN ("UBOLD"); return UBOLD;}
 
-
+^{NUM}{DOT}{SPACE}                                  { TOKEN ("ORDERED"); return ORDERED;}
 
 {TEXT}                                              { TOKEN ("TEXT"); yylval.strval = new std::string(yytext); return TEXT;}
 

@@ -1,17 +1,17 @@
 
 %{
-    void yyerror(const char* s);
-    extern char* yytext;
-    extern "C" int yylex(void);
-    extern "C" int yyparse(void);
     #include <string>
-    std::string* outStr;  
+
+    extern char* yytext;
+    std::string* outStr;
 %}
 
 %code requires {
     #include <cstdio>
-    #include <stdlib.h>
-    #include <iostream>
+    #include <string>
+    extern int yylex(void);
+    static void yyerror(const char* s); 
+    std::string* getHtmlOut(void);
 }
 
 %union {
@@ -22,7 +22,7 @@
 %token ABOLD UBOLD 
 %token AITALIC UITALIC 
 %token ORDERED
-%token PARA LINEBREAK  NEWLINE
+%token PARA LINEBREAK NEWLINE ENDLIST
 %token <strval> TEXT
 
 %left H1 H2 H3 H4 H5 H6 PARA LINEBREAK
@@ -44,9 +44,10 @@
 
 %%
 
-convertList: NEWLINE convertList {$$ = $2;}
-        | PARA convertList {$$ = $2;}
-        | blocks {outStr = $1;}
+convertList: NEWLINE convertList    {$$ = $2;}
+        | PARA convertList          {$$ = $2;}
+        | ENDLIST convertList       {$$ = $2;}
+        | blocks                    {outStr = $1;}
    
 ;
 
@@ -222,54 +223,6 @@ void yyerror(const char *s){
     fprintf(stderr, "error: %s\n", s);
 }
 
-int main(int argc, char* argv[]){
-
-    if(argc!=3){
-        std::cout<<"Error USAGE: "<<argv[0]<<" <input.md> <output.html>\n";
-    }
-
-    const char* inputFilePath = argv[1];
-    const char* outputFilePath = argv[2];
-
-    FILE *fptrout , *fptrin;
-
-    // opening the file in read mode
-    fptrin = fopen(inputFilePath, "r");
-  
-    // checking if the file is opened successfully
-    if (fptrin == NULL) {
-        printf("Error: Unable to open MD File\n.");
-        exit(0);
-    }
-
-    // opening the file in read mode
-    fptrout = fopen(outputFilePath, "w");
-  
-    // checking if the file is opened successfully
-    if (fptrout == NULL) {
-        printf("Error: Unable to open HTML File\n.");
-        exit(0);
-    }
-
-
-    extern FILE *yyin;
-
-    yyin = fptrin;
-
-    fprintf(fptrout,"<!DOCTYPE html>\n");
-    fprintf(fptrout,"<html>\n");
-    fprintf(fptrout,"<head>\n");
-    fprintf(fptrout,"\t<title>Title html</title>\n");
-    fprintf(fptrout,"</head>\n");
-    fprintf(fptrout,"<body>\n");
-
-    yyparse();
-
-    fprintf(fptrout,"%s\n", outStr->c_str());
-    fprintf(fptrout,"</body>\n");
-    fprintf(fptrout,"</html>");
-
-    fclose(fptrin);
-    fclose(fptrout);
-    return 0;
+std::string* getHtmlOut(){
+    return outStr; 
 }
