@@ -21,7 +21,7 @@
 %token H1 H2 H3 H4 H5 H6 
 %token ABOLD UBOLD 
 %token AITALIC UITALIC 
-%token ORDERED
+%token ORDERED UNORDERED
 %token PARA LINEBREAK NEWLINE ENDLIST
 %token <strval> TEXT
 
@@ -44,6 +44,9 @@
 %type <strval> orderedLists
 %type <strval> orderedList
 
+%type <strval> unorderedLists
+%type <strval> unorderedList
+
 %%
 
 convertList: NEWLINE convertList    {$$ = $2;}
@@ -63,19 +66,31 @@ blocks : block
 
 block : paragraphs
       | headings
-      | orderedLists                    { $$ = new std::string("<ol>" + *$1 + "</ol>"); delete $1;} 
+      | orderedLists                    { $$ = new std::string("<ol>" + *$1 + "</ol>"); delete $1;}
+      | unorderedLists                  { $$ = new std::string("<ul>" + *$1 + "</ul>"); delete $1;} 
 ;
 
 orderedLists : orderedList
             | orderedLists orderedList  {$$ = new std::string(*$1 + *$2); delete $1; delete $2;}
-
+;
 orderedList: ORDERED content NEWLINE    { $$ = new std::string("<li>" + *$2 + "</li>");
                                         delete $2;
                                         }
             | ORDERED content PARA       { $$ = new std::string("<li>" + *$2 + "</li>");
                                         delete $2;
                                         }
+;
 
+unorderedLists: unorderedList
+            | unorderedLists unorderedList {$$ = new std::string(*$1 + *$2); delete $1; delete $2;}
+;
+
+unorderedList: UNORDERED content NEWLINE    { $$ = new std::string("<li>" + *$2 + "</li>");
+                                            delete $2;
+                                            }
+            | UNORDERED content PARA       { $$ = new std::string("<li>" + *$2 + "</li>");
+                                            delete $2;
+                                            }  
 paragraphs: paragraph { 
 	  if( $1->length() > 6){
 	  if( $1->substr(0,3) == "<p>" && 
