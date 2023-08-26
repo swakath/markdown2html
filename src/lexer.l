@@ -83,6 +83,6 @@ int yywrap(){
     return 1;
 }
 void token(const char* s){
-    printf("%s\n", s);
+    //printf("%s\n", s);
     return;
 }

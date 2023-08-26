@@ -1,1 +1,0 @@
-/usr/bin/c++    -rdynamic CMakeFiles/converterUnitTest.dir/parser.cpp.o CMakeFiles/converterUnitTest.dir/lexer.cpp.o CMakeFiles/converterUnitTest.dir/Tester.cpp.o CMakeFiles/converterUnitTest.dir/main.cpp.o  -o converterUnitTest /usr/local/lib/libgtest.a -lpthread 

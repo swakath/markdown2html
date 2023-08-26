@@ -1,4 +1,0 @@
-/mnt/d/IITD/Sem1/COL701-Software Systems Lab/markdown2html/gtest/build/CMakeFiles/rebuild_cache.dir
-/mnt/d/IITD/Sem1/COL701-Software Systems Lab/markdown2html/gtest/build/CMakeFiles/edit_cache.dir
-/mnt/d/IITD/Sem1/COL701-Software Systems Lab/markdown2html/gtest/build/CMakeFiles/converterUnitTest.dir
-/mnt/d/IITD/Sem1/COL701-Software Systems Lab/markdown2html/gtest/build/CMakeFiles/test.dir
