@@ -11,7 +11,7 @@
 ALPA                [a-zA-Z]
 NUM                 [0-9]
 PUNC                [@$%^&\{\};"'<>,?/~`=\\]
-SPECIAL             [\#\!\[\]\(\)\|\:\+\-\.]
+SPECIAL             [\#\!\|\:\+\-\.]
 SPACE               " "
 LETTER              (({ALPA})+({ALPA}|{NUM}|{PUNC}|{SPECIAL})*)|(({NUM})({ALPA})+)
 TEXT                ({LETTER})+
@@ -20,10 +20,10 @@ HASH                "#"
 ASTRX               "*"
 USCORE              "_"
 EXCLA               "!"
-LSQRB               "["
-RSQRB               "]"
-LPAR                "("
-RPAR                ")"
+LSQRB               \[
+RSQRB               \]
+LPAR                \(
+RPAR                \)
 PIPE                "|"
 COLON               ":"
 PLUS                "+"
@@ -61,13 +61,17 @@ TAB                 "\t"
                                                         return TEXT;
                                                     }
 ^{NUM}{DOT}{SPACE}                                  {token("ORDERED"); return ORDERED;}
-^{MINUS}{SPACE}                                {token("UNORDERED"); return UNORDERED;}
+^{MINUS}{SPACE}                                     {token("UNORDERED"); return UNORDERED;}
 
 {ASTRX}                                             {token("AITALIC"); return AITALIC;}
 {USCORE}                                            {token("UITALIC"); return UITALIC;}
 {ASTRX}{ASTRX}                                      {token("ABOLD"); return ABOLD;}
 {USCORE}{USCORE}                                    {token("UBOLD"); return UBOLD;}
 
+{LSQRB}                                             {token("LSQRB"); return LSQRB;}
+{RSQRB}                                             {token("RSQRB"); return RSQRB;}
+{LPAR}                                              {token("LPAR"); return LPAR;}
+{RPAR}                                              {token("RPAR"); return RPAR;}
 
 {TEXT}                                              {token("TEXT"); yylval.strval = new std::string(yytext); return TEXT;}
 
@@ -79,6 +83,6 @@ int yywrap(){
     return 1;
 }
 void token(const char* s){
-    //printf("%s\n", s);
+    printf("%s\n", s);
     return;
 }

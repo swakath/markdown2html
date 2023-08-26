@@ -23,6 +23,7 @@
 %token AITALIC UITALIC 
 %token ORDERED UNORDERED
 %token PARA LINEBREAK NEWLINE ENDLIST
+%token LSQRB RSQRB LPAR RPAR
 %token <strval> TEXT
 
 %left H1 H2 H3 H4 H5 H6 PARA LINEBREAK
@@ -191,14 +192,15 @@ headings:
                     $$ = new std::string("<h4>" + *$2 + "</h4>");
                     delete $2;
                 } 
-        | H5 contents NEWLINE{
+        | H5 contents NEWLINE {
                     $$ = new std::string("<h5>" + *$2 + "</h5>");
                     delete $2;
                 }
-        | H6 contents NEWLINE{
+        | H6 contents NEWLINE {
                     $$ = new std::string("<h6>" + *$2 + "</h6>");
                     delete $2;
-                } 
+                }
+         
 ;
 
 
@@ -233,6 +235,11 @@ content: lines
     | UBOLD UITALIC content UBOLD UITALIC   { $$ = new std::string("<strong><em>" + *$3 + "</em></strong>");
                                             delete $3;
                                         }
+    | LSQRB lines RSQRB LPAR lines RPAR {
+                    $$ = new std::string("<a href=\"" + *$5 +"\">" + *$2 + "</a>");
+                    delete $2;
+                    delete $5;
+                } 
 ;
 
 lines: line
