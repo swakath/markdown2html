@@ -1,5 +1,6 @@
 learnings/flex__bison.pdf
 build/*
+gtest/build/*
 *.orig
 *.rej
 *.sig
