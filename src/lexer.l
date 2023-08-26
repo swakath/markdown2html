@@ -19,7 +19,7 @@ TEXT                ({LETTER})+
 HASH                "#"
 ASTRX               "*"
 USCORE              "_"
-EXCLA               "!"
+EXCLA               \!
 LSQRB               \[
 RSQRB               \]
 LPAR                \(
@@ -72,7 +72,7 @@ TAB                 "\t"
 {RSQRB}                                             {token("RSQRB"); return RSQRB;}
 {LPAR}                                              {token("LPAR"); return LPAR;}
 {RPAR}                                              {token("RPAR"); return RPAR;}
-
+{EXCLA}{LSQRB}                                      {token("IMGOPEN"); return IMGOPEN;}
 {TEXT}                                              {token("TEXT"); yylval.strval = new std::string(yytext); return TEXT;}
 
 .                                                   {token("OTHER");}

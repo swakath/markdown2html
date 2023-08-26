@@ -23,7 +23,7 @@
 %token AITALIC UITALIC 
 %token ORDERED UNORDERED
 %token PARA LINEBREAK NEWLINE ENDLIST
-%token LSQRB RSQRB LPAR RPAR
+%token LSQRB RSQRB LPAR RPAR IMGOPEN
 %token <strval> TEXT
 
 %left H1 H2 H3 H4 H5 H6 PARA LINEBREAK
@@ -237,6 +237,11 @@ content: lines
                                         }
     | LSQRB lines RSQRB LPAR lines RPAR {
                     $$ = new std::string("<a href=\"" + *$5 +"\">" + *$2 + "</a>");
+                    delete $2;
+                    delete $5;
+                }
+    | IMGOPEN lines RSQRB LPAR lines RPAR {
+                    $$ = new std::string("<img src=\"" + *$5 +"\" alt=\"" + *$2 + "\">");
                     delete $2;
                     delete $5;
                 } 
