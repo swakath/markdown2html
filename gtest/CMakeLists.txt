@@ -28,9 +28,6 @@ target_include_directories(converterUnitTest PRIVATE "${OUTPUT_DIR}")
 
 target_link_libraries(converterUnitTest ${GTEST_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT}) 
 
-
-
-
 file(COPY "testFiles" DESTINATION "${OUTPUT_DIR}")
 
 enable_testing()

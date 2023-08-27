@@ -17,29 +17,30 @@ int main(int argc, char* argv[]){
 
     FILE *fptrout , *fptrin;
 
-    // opening the file in read mode
+    // opening input file in read mode
     fptrin = fopen(inputFilePath, "r");
   
-    // checking if the file is opened successfully
+    // checking if input file is opened successfully
     if (fptrin == NULL) {
         printf("Error: Unable to open MD File\n.");
         exit(0);
     }
 
-    // opening the file in read mode
+    // opening the output file in write mode
     fptrout = fopen(outputFilePath, "w");
   
-    // checking if the file is opened successfully
+    // checking if output file is opened successfully
     if (fptrout == NULL) {
         printf("Error: Unable to open HTML File\n.");
         exit(0);
     }
 
-
     extern FILE *yyin;
 
+    // mapping lexer input pointer to input file pointer
     yyin = fptrin;
 
+    // writing html header content in output file
     fprintf(fptrout,"<!DOCTYPE html>\n");
     fprintf(fptrout,"<html>\n");
     fprintf(fptrout,"<head>\n");
@@ -48,11 +49,14 @@ int main(int argc, char* argv[]){
     fprintf(fptrout,"<body>\n");
 
     std::string* outputHTML;
+    // performing conversion from markdown to html tags
     yyparse();
 
     outputHTML = getHtmlOut();
-    fprintf(fptrout,"%s\n", outputHTML->c_str());
     printf("%s\n", outputHTML->c_str());
+
+    // writing html end file tags in the output file
+    fprintf(fptrout,"%s\n", outputHTML->c_str());
     fprintf(fptrout,"</body>\n");
     fprintf(fptrout,"</html>");
 
